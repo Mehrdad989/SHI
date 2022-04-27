@@ -103,14 +103,7 @@
 <script src='nouislider.js'></script>
 <script>
 
-var url = 'countries.json'
-var theLayer = L.geoJson(null, {onEachFeature: forEachFeature, style: style});
 
-    $.getJSON(url, function(data) {
-        theLayer.addData(data);
-    });
-
- theLayer.addTo(map);
 
 
 	$(document).ready(function() {
@@ -158,7 +151,7 @@ var theLayer = L.geoJson(null, {onEachFeature: forEachFeature, style: style});
 			range : []
 		}
 
-		fetch('/countries.json',{
+		fetch('countries.json',{
 			method: 'GET'
 		})
 		.then(response => response.json())
@@ -211,7 +204,7 @@ var theLayer = L.geoJson(null, {onEachFeature: forEachFeature, style: style});
 		})
 		.catch(error => console.log(error.message));
 
-		fetch('/earthquakes_day.geojson',{
+		fetch('earthquakes_day.geojson',{
 			method: 'GET'
 		})
 		.then(response => response.json())
