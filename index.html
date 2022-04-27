@@ -103,8 +103,14 @@
 <script src='nouislider.js'></script>
 <script>
 
-var url = 'output.json'
+var url = 'countries.json'
+var theLayer = L.geoJson(null, {onEachFeature: forEachFeature, style: style});
 
+    $.getJSON(url, function(data) {
+        theLayer.addData(data);
+    });
+
+ theLayer.addTo(map);
 
 
 	$(document).ready(function() {
