@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<title>SHI</title>
+	
+		<meta charset="utf-8" />
+	    <!-- Load Leaflet: http://leafletjs.com/ -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+		 integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="crossorigin=""/>
+		<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+		
+		<!-- Load Drawing tool -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+		
+		<!-- CSS and JS files for Search Box -->
+		<script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+		<script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+		
+		<!-- Minimap -->
+		<script src="MiniMap.js"></script>
+		<link  href="Control.MiniMap.css" rel="stylesheet"/>
+		
+	<style>
+      <!-- ~ Maximizes the size of the map on the page ~ -->
+      body { margin:100; padding:0; }
+      #map { position:absolute; top:0; bottom:0; left:0; right:0; width:100%; }
+
+	</style>
+    
+
+	
+  </head>
+
+</form>
+<canvas id="canvas"></canvas>
+<body>
+
+<div id="map"></div>
+
+
+<script>
+
+	var map = L.map('map').setView([48.712854, 9.208281], 6);
+	
+	// Add search bar to map
+	
+	var searchControl = new L.esri.Controls.Geosearch({
+	position:"topright",
+	zoomToResult:true,
+	placeholder: "Enter an address or place e.g. 1 York St"
+	}).addTo(map);
+
+    var results = new L.LayerGroup().addTo(map);
+
+    searchControl.on('results', function(data){
+        results.clearLayers();
+            for (var i = data.results.length - 1; i >= 0; i--) {
+                results.addLayer(L.marker(data.results[i].latlng));
+                }
+              });
+	
+	
+	// Add Draw option to map
+	// FeatureGroup is to store editable layers
+     var drawnItems = new L.FeatureGroup();
+     map.addLayer(drawnItems);
+     var drawControl = new L.Control.Draw({
+         edit: {
+             featureGroup: drawnItems,
+			 edit:true,
+			  poly: {
+                allowIntersection: true
+            }
+		},
+		 draw: {
+			polygon:{
+			allowIntersection:true,
+			showArea:true
+         }
+		}
+     });
+     map.addControl(drawControl);
+	 
+	  map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+
+        drawnItems.addLayer(layer);
+    });
+	
+	// Truncate value based on number of decimals
+        var _round = function(num, len) {
+            return Math.round(num*(Math.pow(10, len)))/(Math.pow(10, len));
+        };
+        // Helper method to format LatLng object (x.xxxxxx, y.yyyyyy)
+        var strLatLng = function(latlng) {
+            return "("+_round(latlng.lat, 6)+", "+_round(latlng.lng, 6)+")";
+        };
+	
+	 // Generate popup content based on layer type
+     // - Returns HTML string, or null if unknown object
+        var getPopupContent = function(layer) {
+            // Marker - add lat/long
+            if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                return strLatLng(layer.getLatLng());
+            // Circle - lat/long, radius
+            } else if (layer instanceof L.Circle) {
+                var center = layer.getLatLng(),
+                    radius = layer.getRadius();
+                return "Center: "+strLatLng(center)+"<br />"
+                      +"Radius: "+_round(radius, 2)+" m";
+            // Rectangle/Polygon - area
+            } else if (layer instanceof L.Polygon) {
+                var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
+                    area = L.GeometryUtil.geodesicArea(latlngs);
+                return "Area: "+L.GeometryUtil.readableArea(area, true);
+            // Polyline - distance
+            } else if (layer instanceof L.Polyline) {
+                var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
+                    distance = 0;
+                if (latlngs.length < 2) {
+                    return "Distance: N/A";
+                } else {
+                    for (var i = 0; i < latlngs.length-1; i++) {
+                        distance += latlngs[i].distanceTo(latlngs[i+1]);
+                    }
+                    return "Distance: "+_round(distance, 2)+" m";
+                }
+            }
+            return null;
+        };
+		
+	 // Object created - bind popup to layer, add to feature group
+        map.on(L.Draw.Event.CREATED, function(event) {
+            var layer = event.layer;
+            var content = getPopupContent(layer);
+            if (content !== null) {
+                layer.bindPopup(content);
+            }
+            drawnItems.addLayer(layer);
+        });
+		
+		// Object(s) edited - update popups
+        map.on(L.Draw.Event.EDITED, function(event) {
+            var layers = event.layers,
+                content = null;
+            layers.eachLayer(function(layer) {
+                content = getPopupContent(layer);
+                if (content !== null) {
+                    layer.setPopupContent(content);
+				}
+            });
+        });
+		
+	// Add base maps
+	var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(map);
+	
+	var Esri_WorldShadedRelief = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri',
+	maxZoom: 13});
+	
+	var esri= L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+	});
+    var osm=new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{ 
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+	
+	var baseMaps = {
+	"ESRI world imagery":Esri_WorldImagery,
+	"OSM":osm,
+	"ESRI gray":esri,
+	"ESRI shade":Esri_WorldShadedRelief
+	};
+	
+	//add layer switch control
+	L.control.layers(baseMaps,{ 'drawlayer': drawnItems }, { position: 'topright', collapsed: true }).addTo(map);
+	
+	//add scale bar to map
+        L.control.scale({
+            position: 'bottomleft'
+        }).addTo(map);
+	
+	//add WMS layer	
+    //L.tileLayer.wms("https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi", {
+    	//layers: 'Agricultural_Lands_Croplands_2000',
+        //format: 'image/png',
+        //transparent: true,
+        //attribution: "Weather data © 2012 IEM Nexrad"
+   // }).addTo(map);
+   
+// Minimap
+var miniMap = new L.Control.MiniMap(Esri_WorldImagery, {
+  position: 'bottomright'
+}).addTo(map);
+
+
+
+</script>
+</body>
+</html>
