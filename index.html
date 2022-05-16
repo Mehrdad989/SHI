@@ -53,6 +53,41 @@
 	// Geolocate user
 	L.control.locate().addTo(map);
 	
+	//Fetch Geojson
+	
+		fetch("data/SHI_DE.geojson")
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(data) {
+		var shi= L.geoJSON(data, {
+			style: function(feature) {
+				return {
+				color: "red"
+			};
+		},
+			pointToLayer: function(feature, latlng) {
+				return new L.CircleMarker(latlng, {
+				 radius: 3,
+				fillColor: "yellow",
+				color: "blue",
+				weight: 0.5,
+				opacity: 1,
+				fillOpacity: 0.8,
+				interactive: true,
+				fill:true
+        });
+	},
+		onEachFeature: function (feature, layer) {
+		layer.bindPopup('<h2>SHI: '+feature.properties.SHI.toFixed(1));
+		}
+});
+control.addOverlay(shi,"SHI_points");
+});
+
+var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
+control.addTo(map);
+	
 	// Add search bar to map
 	
 	var searchControl = new L.esri.Controls.Geosearch({
