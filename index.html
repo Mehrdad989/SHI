@@ -276,7 +276,22 @@ function getColor(d) {
         })
 	var miniMap = new L.Control.MiniMap(Esri2, { toggleDisplay: true }).addTo(map);
  
-
+// Add AAM logo as watermark
+	L.Control.Watermark =L.Control.extend({
+	  onAdd:function(map){
+		var img = L.DomUtil.create('img');
+		img.src = 'images/AAM.png';
+		img.style.width='50px';
+		return img;
+	  },
+	  onRemove:function(map){},
+	 });
+	 
+	 L.control.watermark = function(opts){
+		return new L.Control.Watermark(opts);
+		}
+		
+	L.control.watermark({position:'bottomleft'}).addTo(map);
 </script>
 </body>
 </html>
