@@ -48,7 +48,7 @@
 
 <script>
 
-	var map = L.map('map').setView([48.712854, 9.208281], 6);
+	var map = L.map('map').setView([48.712854, 9.208281], 4);
 	
 	// Geolocate user
 	L.control.locate().addTo(map);
@@ -93,12 +93,13 @@ function getColor(d) {
     return d == 1   ? 'blue' :
            d == 2   ? 'yellow' :
            d == 3   ? 'red' :
+           d == 4   ? 'green' :
                           '#00000';
             }
 
 //Fetch Geojson adding temp bins
 	
-		fetch("data/map.geojson")
+		fetch("data/temp.geojson")
 		.then(function(response) {
 			return response.json();
 		})
