@@ -87,7 +87,37 @@ control.addOverlay(shi,"SHI_points");
 
 var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
 control.addTo(map);
+
+	// Color function
+function getColor(d) {
+    return d == 1   ? 'blue' :
+           d == 2   ? 'yellow' :
+           d == 3   ? 'red' :
+                          '#00000';
+            }
+
+//Fetch Geojson adding temp bins
 	
+		fetch("map.geojson")
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(data) {
+		var temp= L.geoJSON(data, {
+			style: function(feature) {
+				return {
+				fillColor: getColor(feature.properties.DN),
+				opacity:1,
+				fillOpacity:0.8
+			};
+		},
+			
+		onEachFeature: function (feature, layer) {
+		layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+		}
+});
+ control.addOverlay(temp,"Temp_bins");
+});
 	// Add search bar to map
 	
 	var searchControl = new L.esri.Controls.Geosearch({
