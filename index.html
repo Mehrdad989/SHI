@@ -88,6 +88,36 @@ control.addOverlay(shi,"SHI_points");
 var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
 control.addTo(map);
 
+	// Fetch SHI Euorpe 
+	fetch("data/SHI_Europe.geojson")
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(data) {
+		var shi_eu= L.geoJSON(data, {
+			style: function(feature) {
+				return {
+				color: "red"
+			};
+		},
+			pointToLayer: function(feature, latlng) {
+				return new L.CircleMarker(latlng, {
+				 radius: 4,
+				fillColor: "yellow",
+				color: "blue",
+				weight: 0.5,
+				opacity: 1,
+				fillOpacity: 0.8,
+				interactive: true,
+				fill:true
+        });
+	},
+		onEachFeature: function (feature, layer) {
+		layer.bindPopup('<h2>SHI: '+feature.properties.SHI);
+		}
+});
+ control.addOverlay(shi_eu,"EU SHI points");
+});
 	// Color function
 function getColor(d) {
     return d == 1   ? 'blue' :
@@ -119,6 +149,30 @@ function getColor(d) {
 		}
 });
  control.addOverlay(temp,"Temp_bins");
+});
+	// Fetch precipitation Geojson
+	//Fetch Geojson adding prcp bins
+	
+		fetch("data/prcp.geojson")
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(data) {
+		var prcp= L.geoJSON(data, {
+			style: function(feature) {
+				return {
+				fillColor: getColor(feature.properties.DN),
+				color:'#ffffff00',
+				opacity:1,
+				fillOpacity:0.8
+			};
+		},
+			
+		onEachFeature: function (feature, layer) {
+		layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+		}
+});
+ control.addOverlay(prcp,"Prcp_bins");
 });
 	// Add search bar to map
 	
