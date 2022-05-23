@@ -193,13 +193,13 @@ function getColor(d) {
                 Just make sure to include the georaster option!
                 http://leafletjs.com/reference-1.2.0.html#gridlayer
             */
-            var layer = new GeoRasterLayer({
+            var final_bins = new GeoRasterLayer({
                 georaster: georaster,
                 opacity: 1,
                 resolution: 250
             });
             //layer.addTo(map);
-	    control.addOverlay(layer,"SHI_bins");
+	    control.addOverlay(final_bins,"SHI_bins");
             //map.fitBounds(layer.getBounds());
 
         });
