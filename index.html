@@ -198,9 +198,9 @@ function getColor(d) {
                 opacity: 1,
                 resolution: 250
             });
-            layer.addTo(map);
-
-            map.fitBounds(layer.getBounds());
+            //layer.addTo(map);
+	    control.addOverlay(layer,"SHI_bins");
+            //map.fitBounds(layer.getBounds());
 
         });
 	      
