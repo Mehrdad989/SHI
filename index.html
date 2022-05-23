@@ -179,7 +179,7 @@ function getColor(d) {
  control.addOverlay(prcp,"Prcp_bins");
 });
 	// Add Bins raster
-	var url_to_geotiff_file = "data/Bins_final_deflate.tif"; 
+	var url_to_geotiff_file = "data/Bins_final_masked_deflate.tif"; 
 
       fetch(url_to_geotiff_file)
         .then(response => response.arrayBuffer())
@@ -195,8 +195,46 @@ function getColor(d) {
             */
             var final_bins = new GeoRasterLayer({
                 georaster: georaster,
-                opacity: 1,
-                resolution: 250
+                opacity: 0.8,
+                resolution: 250,
+		pixelValuesToColorFn:  values => 
+				values[0] === 111 ? '#dc47aa' :
+                values[0] === 112 ? '#82eba5' :
+                values[0] === 113 ? '#df2144' :
+                values[0] === 114 ? '#83c93c' :
+                values[0] === 121 ? '#b4ca45' :
+                values[0] === 122 ? '#c045d8' :
+                values[0] === 123 ? '#8e63e5' :
+                values[0] === 124 ? '#ef834d' :
+                values[0] === 131 ? '#21e0a1' :
+                values[0] === 132 ? '#eace3f' :
+                values[0] === 133 ? '#2e48cc' :
+                values[0] === 134 ? '#efef64' :
+                values[0] === 211 ? '#d9396e' :
+                values[0] === 212 ? '#25ed25' :
+                values[0] === 213 ? '#1ea9ef' :
+                values[0] === 214 ? '#6c9bca' :
+                values[0] === 221 ? '#dc0f0f' :
+                values[0] === 222 ? '#7897d4' :
+                values[0] === 223 ? '#2c2ccc' :
+                values[0] === 224 ? '#ba7ada' :
+                values[0] === 231 ? '#d142d1' :
+                values[0] === 232 ? '#ad73e7' :
+                values[0] === 233 ? '#2fee4f' :
+                values[0] === 234 ? '#62c9b8' :
+                values[0] === 311 ? '#abe633' :
+                values[0] === 312 ? '#e1a86e' :
+                values[0] === 313 ? '#c973bb' :
+                values[0] === 314 ? '#47dcdc' :
+                values[0] === 321 ? '#68bbcb' :
+                values[0] === 322 ? '#6dcf3c' :
+                values[0] === 323 ? '#cea044' :
+                values[0] === 324 ? '#de3513' :
+                values[0] === 331 ? '#76d3a5' :
+                values[0] === 332 ? '#9282e2' :
+                values[0] === 333 ? '#82cd73' :
+                values[0] === 334 ? '#eb58a2' :
+                '#ffffff00'
             });
             //layer.addTo(map);
 	    control.addOverlay(final_bins,"SHI_bins");
