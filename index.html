@@ -178,6 +178,39 @@ function getColor(d) {
 });
  control.addOverlay(prcp,"Prcp_bins");
 });
+	
+	// Add Texture bins
+
+var url_to_geotiff_file = "data/Texture_bins.tif"; 
+
+   fetch(url_to_geotiff_file)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          parseGeoraster(arrayBuffer).then(georaster => {
+            console.log("georaster:", georaster);
+
+            /*
+                GeoRasterLayer is an extension of GridLayer,
+                which means can use GridLayer options like opacity.
+                Just make sure to include the georaster option!
+                http://leafletjs.com/reference-1.2.0.html#gridlayer
+            */
+            var texture_bins = new GeoRasterLayer({
+                georaster: georaster,
+                opacity: 0.8,
+                resolution: 250,
+				pixelValuesToColorFn:  values => 
+				values[0] === 1 ? '#13de13' :
+                values[0] === 2 ? '#4d4def' :
+                values[0] === 3 ? '#dc0f0f' :
+                '#ffffff00'
+            })
+
+			control.addOverlay(texture_bins,"Texture_bins");
+			
+        });
+      });	
+	
 	// Add Bins raster
 	var url_to_geotiff_file = "data/Bins_final_masked_deflate.tif"; 
 
