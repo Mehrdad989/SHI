@@ -276,7 +276,32 @@ var url_to_geotiff_file = "data/Texture_bins.tif";
         });
 	      
       });
-	
+		// Add Soil health index
+
+var url_to_geotiff_file = "data/SHI.tif"; 
+
+   fetch(url_to_geotiff_file)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          parseGeoraster(arrayBuffer).then(georaster => {
+            console.log("georaster:", georaster);
+
+            /*
+                GeoRasterLayer is an extension of GridLayer,
+                which means can use GridLayer options like opacity.
+                Just make sure to include the georaster option!
+                http://leafletjs.com/reference-1.2.0.html#gridlayer
+            */
+            var SHI = new GeoRasterLayer({
+                georaster: georaster,
+                opacity: 0.8,
+                resolution: 250
+            })
+
+		control.addOverlay(SHI,"Soil health index");
+			
+        });
+      });
 	
 	
 	// Add search bar to map
