@@ -295,7 +295,13 @@ var url_to_geotiff_file = "data/SHI.tif";
             var SHI = new GeoRasterLayer({
                 georaster: georaster,
                 opacity: 0.8,
-                resolution: 250
+                resolution: 250,
+		    pixelValuesToColorFn:  values => 
+				values[0] === 1 ? '#13de13' :
+                values[0] === 2 ? '#4d4def' :
+                values[0] === 3 ? '#dc0f0f' :
+                '#ffffff00'
+            })
             })
 
 		control.addOverlay(SHI,"Soil health index");
