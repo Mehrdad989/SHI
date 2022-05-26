@@ -171,7 +171,7 @@
                                 layer.bindPopup('<h2>Class: '+feature.properties.DN);
                             }
                         });
-                        control.addOverlay(prcp,"Precipitation classes");
+                        control.addOverlay(prcp,"Precipitation Classes");
                 });
             
             // Add Texture bins
@@ -313,7 +313,7 @@
                                     return color;
                                 }
                             });
-                            control.addOverlay(layer,"Soil health index");
+                            control.addOverlay(layer,"Soil Health Index");
                             map.on('click', function (e) {
 				            const latlng = [e.latlng.lng, e.latlng.lat];
 				            const results = geoblaze.identify(georaster, latlng);           
