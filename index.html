@@ -186,7 +186,7 @@
                         var texture_bins = new GeoRasterLayer({
                             georaster: georaster,
                             opacity: 0.8,
-                            resolution: 64,
+                            resolution: 256,
                             updateWhenZooming: false,
                             keepBuffer: 25,
                             pixelValuesToColorFn:  values => 
@@ -223,7 +223,7 @@
                         var final_bins = new GeoRasterLayer({
                             georaster: georaster,
                             opacity: 0.8,
-                            resolution: 128,
+                            resolution: 256,
                             pixelValuesToColorFn:  values => 
                             values[0] === 111 ? '#dc47aa' :
                             values[0] === 112 ? '#82eba5' :
