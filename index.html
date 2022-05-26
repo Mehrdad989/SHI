@@ -1,483 +1,502 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+    <head>
 
-	<title>SHI</title>
-	
-		<meta charset="utf-8" />
-	    <!-- Load Leaflet: http://leafletjs.com/ -->
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-		 integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="crossorigin=""/>
-		<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
-		
-		<!-- Load Drawing tool -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
-		
-		<!-- CSS and JS files for Search Box -->
-		<script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
-		<script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
-		<link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
-		
-		<!-- Minimap -->
-		<script src="js/Control.MiniMap.js" type="text/javascript"></script>
-		<link  href="css/Control.MiniMap.css" rel="stylesheet"/>
-	
-		<!-- Geolocate user-->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
-		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
-		
-		
-	
-	<style>
-      <!-- ~ Maximizes the size of the map on the page ~ -->
-      body { margin:100; padding:0; }
-      #map { position:absolute; top:0; bottom:0; left:0; right:0; width:100%; }
+        <title>SHI</title>
+        
+        <meta charset="utf-8" />
 
-	</style>
-    
+        <!-- Load Leaflet: http://leafletjs.com/ -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+        
+        <!-- Load Drawing tool -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+        
+        <!-- CSS and JS files for Search Box -->
+        <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+        <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+        
+        <!-- Minimap -->
+        <script src="js/Control.MiniMap.js" type="text/javascript"></script>
+        <link  href="css/Control.MiniMap.css" rel="stylesheet"/>
 
-	
-  </head>
+        <!-- Geolocate user-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+        
+            
+        
+        <style>
+            /* <!-- ~ Maximizes the size of the map on the page ~ --> */
+            body { margin:100; padding:0; }
+            #map { position:absolute; top:0; bottom:0; left:0; right:0; width:100%; }
+        </style>
+        
+    </head>
 
-</form>
-<canvas id="canvas"></canvas>
-<body>
+    <body>
 
-<div id="map"></div>
-<!-- Georaster-->
-<script src="https://unpkg.com/georaster"></script>
-<script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+        <div id="map"></div>
 
-<script>
+        <!-- Georaster-->
+        <script src="https://unpkg.com/georaster"></script>
+        <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+        <script src="https://unpkg.com/geoblaze"></script>
+        <script src="https://unpkg.com/chroma-js"></script>
 
-	var map = L.map('map').setView([48.712854, 9.208281], 4);
-	
-	// Geolocate user
-	L.control.locate().addTo(map);
-	
-	//Fetch Geojson
-	
-		fetch("data/SHI_DE.geojson")
-		.then(function(response) {
-			return response.json();
-		})
-		.then(function(data) {
-		var shi= L.geoJSON(data, {
-			style: function(feature) {
-				return {
-				color: "red"
-			};
-		},
-			pointToLayer: function(feature, latlng) {
-				return new L.CircleMarker(latlng, {
-				 radius: 4.5,
-				fillColor: "yellow",
-				color: "blue",
-				weight: 0.5,
-				opacity: 1,
-				fillOpacity: 0.8,
-				interactive: true,
-				fill:true
-        });
-	},
-		onEachFeature: function (feature, layer) {
-		layer.bindPopup('<h2>SHI: '+feature.properties.SHI.toFixed(1));
-		}
-});
-control.addOverlay(shi,"SHI_points");
-});
+        <script>
 
-var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
-control.addTo(map);
+            var map = L.map('map').setView([48.712854, 9.208281], 4);
+            
+            // Geolocate user
+            L.control.locate().addTo(map);
+            
+            //Fetch Geojson
+            fetch("data/SHI_DE.geojson")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var shi= L.geoJSON(data, {
+                        style: function(feature) {
+                            return {
+                                color: "red"
+                            };
+                        },
+                        pointToLayer: function(feature, latlng) {
+                            return new L.CircleMarker(latlng, {
+                                radius: 4.5,
+                                fillColor: "yellow",
+                                color: "blue",
+                                weight: 0.5,
+                                opacity: 1,
+                                fillOpacity: 0.8,
+                                interactive: true,
+                                fill:true
+                            });
+                        },
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<h2>SHI: '+feature.properties.SHI.toFixed(1));
+                        }
+                    });
+                    control.addOverlay(shi,"SHI_points");
+                });
 
-	// Fetch SHI Euorpe 
-	fetch("data/SHI_Europe.geojson")
-		.then(function(response) {
-			return response.json();
-		})
-		.then(function(data) {
-		var shi_eu= L.geoJSON(data, {
-			style: function(feature) {
-				return {
-				color: "red"
-			};
-		},
-			pointToLayer: function(feature, latlng) {
-				return new L.CircleMarker(latlng, {
-				 radius: 4,
-				fillColor: "yellow",
-				color: "blue",
-				weight: 0.5,
-				opacity: 1,
-				fillOpacity: 0.8,
-				interactive: true,
-				fill:true
-        });
-	},
-		onEachFeature: function (feature, layer) {
-		layer.bindPopup('<h2>SHI: '+feature.properties.SHI);
-		}
-});
- control.addOverlay(shi_eu,"EU SHI points");
-});
-	// Color function
-function getColor(d) {
-    return d == 1   ? 'blue' :
-           d == 2   ? 'yellow' :
-           d == 3   ? 'red' :
-           d == 4   ? 'green' :
-                          '#00000';
+            var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
+            control.addTo(map);
+
+            // Fetch SHI Euorpe 
+            fetch("data/SHI_Europe.geojson")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var shi_eu= L.geoJSON(data, {
+                        style: function(feature) {
+                            return {
+                                color: "red"
+                            };
+                        },
+                        pointToLayer: function(feature, latlng) {
+                            return new L.CircleMarker(latlng, {
+                                radius: 4,
+                                fillColor: "yellow",
+                                color: "blue",
+                                weight: 0.5,
+                                opacity: 1,
+                                fillOpacity: 0.8,
+                                interactive: true,
+                                fill:true
+                            });
+                        },
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<h2>SHI: '+feature.properties.SHI);
+                        }
+                    });
+                    control.addOverlay(shi_eu,"EU SHI points");
+                });
+
+            // Color function
+            function getColor(d) {
+                return d == 1   ? 'blue' :
+                    d == 2   ? 'yellow' :
+                    d == 3   ? 'red' :
+                    d == 4   ? 'green' :
+                                '#00000';
             }
 
-//Fetch Geojson adding temp bins
-	
-		fetch("data/temp.geojson")
-		.then(function(response) {
-			return response.json();
-		})
-		.then(function(data) {
-		var temp= L.geoJSON(data, {
-			style: function(feature) {
-				return {
-				fillColor: getColor(feature.properties.DN),
-				color:'#ffffff00',
-				opacity:1,
-				fillOpacity:0.8
-			};
-		},
-			
-		onEachFeature: function (feature, layer) {
-		layer.bindPopup('<h2>Bin: '+feature.properties.DN);
-		}
-});
- control.addOverlay(temp,"Temp_bins");
-});
-	// Fetch precipitation Geojson
-	//Fetch Geojson adding prcp bins
-	
-		fetch("data/prcp.geojson")
-		.then(function(response) {
-			return response.json();
-		})
-		.then(function(data) {
-		var prcp= L.geoJSON(data, {
-			style: function(feature) {
-				return {
-				fillColor: getColor(feature.properties.DN),
-				color:'#ffffff00',
-				opacity:1,
-				fillOpacity:0.8
-			};
-		},
-			
-		onEachFeature: function (feature, layer) {
-		layer.bindPopup('<h2>Bin: '+feature.properties.DN);
-		}
-});
- control.addOverlay(prcp,"Prcp_bins");
-});
-	
-	// Add Texture bins
+            //Fetch Geojson adding temp bins
+            fetch("data/temp.geojson")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var temp= L.geoJSON(data, {
+                        style: function(feature) {
+                            return {
+                                fillColor: getColor(feature.properties.DN),
+                                color:'#ffffff00',
+                                opacity:1,
+                                fillOpacity:0.8
+                            };
+                        },
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+                        }
+                    });
+                    control.addOverlay(temp,"Temp_bins");
+                });
 
-var url_to_geotiff_file = "data/Texture_bins.tif"; 
+            //Fetch Geojson adding prcp bins
+            fetch("data/prcp.geojson")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                        var prcp= L.geoJSON(data, {
+                            style: function(feature) {
+                                return {
+                                    fillColor: getColor(feature.properties.DN),
+                                    color:'#ffffff00',
+                                    opacity:1,
+                                    fillOpacity:0.8
+                                };
+                            },
+                            onEachFeature: function (feature, layer) {
+                                layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+                            }
+                        });
+                        control.addOverlay(prcp,"Prcp_bins");
+                });
+            
+            // Add Texture bins
+            var url_to_geotiff_file = "data/Texture_bins.tif"; 
 
-   fetch(url_to_geotiff_file)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => {
-          parseGeoraster(arrayBuffer).then(georaster => {
-            console.log("georaster:", georaster);
+          var text=  fetch(url_to_geotiff_file)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => {
+                    parseGeoraster(arrayBuffer).then(georaster => {
+                        console.log("georaster:", georaster);
 
-            /*
-                GeoRasterLayer is an extension of GridLayer,
-                which means can use GridLayer options like opacity.
-                Just make sure to include the georaster option!
-                http://leafletjs.com/reference-1.2.0.html#gridlayer
-            */
-            var texture_bins = new GeoRasterLayer({
-                georaster: georaster,
-                opacity: 0.8,
-                resolution: 250,
-				pixelValuesToColorFn:  values => 
-				values[0] === 1 ? '#13de13' :
-                values[0] === 2 ? '#4d4def' :
-                values[0] === 3 ? '#dc0f0f' :
-                '#ffffff00'
-            })
+                        var texture_bins = new GeoRasterLayer({
+                            georaster: georaster,
+                            opacity: 0.8,
+                            resolution: 64,
+                            updateWhenZooming: false,
+                            keepBuffer: 25,
+                            pixelValuesToColorFn:  values => 
+                            values[0] === 1 ? '#13de13' :
+                            values[0] === 2 ? '#4d4def' :
+                            values[0] === 3 ? '#dc0f0f' :
+                            '#ffffff00'
+                        });
+                        control.addOverlay(texture_bins,"Texture_bins");
+                        map.fitBounds(texture_bins.getBounds());
+                        texture_bins.on('click', function (e) {
+				            const latlng = [e.latlng.lng, e.latlng.lat];
+				            const results = geoblaze.identify(georaster, latlng);           
+					            if (results > 0) {
+                                    let html = (`<span class="popupText">Texture bin: ${results} </span>`);
+                                    let popup = L.popup()
+                                                .setLatLng(e.latlng)
+                                                .setContent(html)
+                                                .openOn(map);
+                                }
+                        });
 
-			control.addOverlay(texture_bins,"Texture_bins");
-			
-        });
-      });	
-	
-	// Add Bins raster
-	var url_to_geotiff_file = "data/Bins_final_masked_deflate.tif"; 
+                    });
+                });	
 
-      fetch(url_to_geotiff_file)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => {
-          parseGeoraster(arrayBuffer).then(georaster => {
-            console.log("georaster:", georaster);
+            // Add Bins raster
+            var url_to_geotiff_file = "data/Bins_final_masked_deflate.tif"; 
 
-            /*
-                GeoRasterLayer is an extension of GridLayer,
-                which means can use GridLayer options like opacity.
-                Just make sure to include the georaster option!
-                http://leafletjs.com/reference-1.2.0.html#gridlayer
-            */
-            var final_bins = new GeoRasterLayer({
-                georaster: georaster,
-                opacity: 0.8,
-                resolution: 250,
-		pixelValuesToColorFn:  values => 
-				values[0] === 111 ? '#dc47aa' :
-                values[0] === 112 ? '#82eba5' :
-                values[0] === 113 ? '#df2144' :
-                values[0] === 114 ? '#83c93c' :
-                values[0] === 121 ? '#b4ca45' :
-                values[0] === 122 ? '#c045d8' :
-                values[0] === 123 ? '#8e63e5' :
-                values[0] === 124 ? '#ef834d' :
-                values[0] === 131 ? '#21e0a1' :
-                values[0] === 132 ? '#eace3f' :
-                values[0] === 133 ? '#2e48cc' :
-                values[0] === 134 ? '#efef64' :
-                values[0] === 211 ? '#d9396e' :
-                values[0] === 212 ? '#25ed25' :
-                values[0] === 213 ? '#1ea9ef' :
-                values[0] === 214 ? '#6c9bca' :
-                values[0] === 221 ? '#dc0f0f' :
-                values[0] === 222 ? '#7897d4' :
-                values[0] === 223 ? '#2c2ccc' :
-                values[0] === 224 ? '#ba7ada' :
-                values[0] === 231 ? '#d142d1' :
-                values[0] === 232 ? '#ad73e7' :
-                values[0] === 233 ? '#2fee4f' :
-                values[0] === 234 ? '#62c9b8' :
-                values[0] === 311 ? '#abe633' :
-                values[0] === 312 ? '#e1a86e' :
-                values[0] === 313 ? '#c973bb' :
-                values[0] === 314 ? '#47dcdc' :
-                values[0] === 321 ? '#68bbcb' :
-                values[0] === 322 ? '#6dcf3c' :
-                values[0] === 323 ? '#cea044' :
-                values[0] === 324 ? '#de3513' :
-                values[0] === 331 ? '#76d3a5' :
-                values[0] === 332 ? '#9282e2' :
-                values[0] === 333 ? '#82cd73' :
-                values[0] === 334 ? '#eb58a2' :
-                '#ffffff00'
-            });
-            //layer.addTo(map);
-	    control.addOverlay(final_bins,"SHI_bins");
-            //map.fitBounds(layer.getBounds());
+            fetch(url_to_geotiff_file)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => {
+                    parseGeoraster(arrayBuffer).then(georaster => {
+                        console.log("georaster:", georaster);
+                        var final_bins = new GeoRasterLayer({
+                            georaster: georaster,
+                            opacity: 0.8,
+                            resolution: 128,
+                            pixelValuesToColorFn:  values => 
+                            values[0] === 111 ? '#dc47aa' :
+                            values[0] === 112 ? '#82eba5' :
+                            values[0] === 113 ? '#df2144' :
+                            values[0] === 114 ? '#83c93c' :
+                            values[0] === 121 ? '#b4ca45' :
+                            values[0] === 122 ? '#c045d8' :
+                            values[0] === 123 ? '#8e63e5' :
+                            values[0] === 124 ? '#ef834d' :
+                            values[0] === 131 ? '#21e0a1' :
+                            values[0] === 132 ? '#eace3f' :
+                            values[0] === 133 ? '#2e48cc' :
+                            values[0] === 134 ? '#efef64' :
+                            values[0] === 211 ? '#d9396e' :
+                            values[0] === 212 ? '#25ed25' :
+                            values[0] === 213 ? '#1ea9ef' :
+                            values[0] === 214 ? '#6c9bca' :
+                            values[0] === 221 ? '#dc0f0f' :
+                            values[0] === 222 ? '#7897d4' :
+                            values[0] === 223 ? '#2c2ccc' :
+                            values[0] === 224 ? '#ba7ada' :
+                            values[0] === 231 ? '#d142d1' :
+                            values[0] === 232 ? '#ad73e7' :
+                            values[0] === 233 ? '#2fee4f' :
+                            values[0] === 234 ? '#62c9b8' :
+                            values[0] === 311 ? '#abe633' :
+                            values[0] === 312 ? '#e1a86e' :
+                            values[0] === 313 ? '#c973bb' :
+                            values[0] === 314 ? '#47dcdc' :
+                            values[0] === 321 ? '#68bbcb' :
+                            values[0] === 322 ? '#6dcf3c' :
+                            values[0] === 323 ? '#cea044' :
+                            values[0] === 324 ? '#de3513' :
+                            values[0] === 331 ? '#76d3a5' :
+                            values[0] === 332 ? '#9282e2' :
+                            values[0] === 333 ? '#82cd73' :
+                            values[0] === 334 ? '#eb58a2' :
+                            '#ffffff00'
+                        });
+                        control.addOverlay(final_bins,"SHI_bins");
+                        //map.fitBounds(layer.getBounds());
+                        final_bins.on('click', function (e) {
+				            const latlng = [e.latlng.lng, e.latlng.lat];
+				            const results = geoblaze.identify(georaster, latlng);           
+					            if (results > 0) {
+                                    let html = (`<span class="popupText">Texture bin: ${results} </span>`);
+                                    let popup = L.popup()
+                                                .setLatLng(e.latlng)
+                                                .setContent(html)
+                                                .openOn(map);
+                                }
+                        });
+                    });
+                });
 
-        });
-	      
-      });
-		// Add Soil health index
+            // Add Soil health index
+            var url_to_geotiff_file = "data/SHI.tif"; 
 
-var url_to_geotiff_file = "data/SHI.tif"; 
+            fetch(url_to_geotiff_file)
+                    .then(response => response.arrayBuffer())
+                    .then(arrayBuffer => {
+                        parseGeoraster(arrayBuffer).then(georaster => {
+                            const min = georaster.mins[0];
+                            const max = georaster.maxs[0];
+                            const range = georaster.ranges[0];
 
-   fetch(url_to_geotiff_file)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => {
-          parseGeoraster(arrayBuffer).then(georaster => {
-            console.log("georaster:", georaster);
+                            // available color scales can be found by running console.log(chroma.brewer);
+                            console.log(chroma.brewer);
+                            var scale = chroma.scale("spectral");
+                            console.log("georaster:", georaster);
 
-            /*
-                GeoRasterLayer is an extension of GridLayer,
-                which means can use GridLayer options like opacity.
-                Just make sure to include the georaster option!
-                http://leafletjs.com/reference-1.2.0.html#gridlayer
-            */
-            var SHI = new GeoRasterLayer({
-                georaster: georaster,
-                opacity: 0.8,
-                resolution: 250
-	
+                            const layer = new GeoRasterLayer({
+                                georaster: georaster,
+                                opacity: 0.8,
+                                resolution: 256,
+                                pixelValuesToColorFn: function(pixelValues) {
+                                    var pixelValue = pixelValues[0]; // there's just one band in this raster
+
+                                    // if there's zero wind, don't return a color
+                                    if (pixelValue <= 0) return null;
+
+                                    // scale to 0 - 1 used by chroma
+                                    var scaledPixelValue = (pixelValue - min) / range;
+
+                                    var color = scale(scaledPixelValue).hex();
+
+                                    return color;
+                                }
+                            });
+                            control.addOverlay(layer,"Soil health index");
+                            map.on('click', function (e) {
+				            const latlng = [e.latlng.lng, e.latlng.lat];
+				            const results = geoblaze.identify(georaster, latlng);           
+					            if (results > 0) {
+                                    let html = (`<span class="popupText">Soi health index: ${results} </span>`);
+                                    let popup = L.popup()
+                                                .setLatLng(e.latlng)
+                                                .setContent(html)
+                                                .openOn(map);
+                                }
+                        });
+                        });
+                    });
+            
+            // Add search bar to map
+            var searchControl = new L.esri.Controls.Geosearch({
+                position:"topright",
+                zoomToResult:true,
+                placeholder: "Enter an address or place e.g. 1 York St"
+            }).addTo(map);
+
+            var results = new L.LayerGroup().addTo(map);
+
+            searchControl.on('results', function(data){
+                results.clearLayers();
+                    for (var i = data.results.length - 1; i >= 0; i--) {
+                        results.addLayer(L.marker(data.results[i].latlng));
+                    }
             });
             
-
-		control.addOverlay(SHI,"Soil health index");
-			
-        });
-      });
-	
-	
-	// Add search bar to map
-	
-	var searchControl = new L.esri.Controls.Geosearch({
-	position:"topright",
-	zoomToResult:true,
-	placeholder: "Enter an address or place e.g. 1 York St"
-	}).addTo(map);
-
-    var results = new L.LayerGroup().addTo(map);
-
-    searchControl.on('results', function(data){
-        results.clearLayers();
-            for (var i = data.results.length - 1; i >= 0; i--) {
-                results.addLayer(L.marker(data.results[i].latlng));
-                }
-              });
-	
-	
-	// Add Draw option to map
-	// FeatureGroup is to store editable layers
-     var drawnItems = new L.FeatureGroup();
-     map.addLayer(drawnItems);
-     var drawControl = new L.Control.Draw({
-         edit: {
-             featureGroup: drawnItems,
-			 edit:true,
-			  poly: {
-                allowIntersection: true
-            }
-		},
-		 draw: {
-			polygon:{
-			allowIntersection:true,
-			showArea:true
-         }
-		}
-     });
-     map.addControl(drawControl);
-	 
-	  map.on(L.Draw.Event.CREATED, function (event) {
-        var layer = event.layer;
-
-        drawnItems.addLayer(layer);
-    });
-	
-	// Truncate value based on number of decimals
-        var _round = function(num, len) {
-            return Math.round(num*(Math.pow(10, len)))/(Math.pow(10, len));
-        };
-        // Helper method to format LatLng object (x.xxxxxx, y.yyyyyy)
-        var strLatLng = function(latlng) {
-            return "("+_round(latlng.lat, 6)+", "+_round(latlng.lng, 6)+")";
-        };
-	
-	 // Generate popup content based on layer type
-     // - Returns HTML string, or null if unknown object
-        var getPopupContent = function(layer) {
-            // Marker - add lat/long
-            if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-                return strLatLng(layer.getLatLng());
-            // Circle - lat/long, radius
-            } else if (layer instanceof L.Circle) {
-                var center = layer.getLatLng(),
-                    radius = layer.getRadius();
-                return "Center: "+strLatLng(center)+"<br />"
-                      +"Radius: "+_round(radius, 2)+" m";
-            // Rectangle/Polygon - area
-            } else if (layer instanceof L.Polygon) {
-                var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
-                    area = L.GeometryUtil.geodesicArea(latlngs);
-                return "Area: "+L.GeometryUtil.readableArea(area, true);
-            // Polyline - distance
-            } else if (layer instanceof L.Polyline) {
-                var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
-                    distance = 0;
-                if (latlngs.length < 2) {
-                    return "Distance: N/A";
-                } else {
-                    for (var i = 0; i < latlngs.length-1; i++) {
-                        distance += latlngs[i].distanceTo(latlngs[i+1]);
+            // Add Draw option to map
+            // FeatureGroup is to store editable layers
+            var drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+            var drawControl = new L.Control.Draw({
+                edit: {
+                    featureGroup: drawnItems,
+                    edit:true,
+                    poly: {
+                        allowIntersection: true
                     }
-                    return "Distance: "+_round(distance, 2)+" m";
+                },
+                draw: {
+                    polygon:{
+                        allowIntersection:true,
+                        showArea:true
+                    }
                 }
-            }
-            return null;
-        };
-		
-	 // Object created - bind popup to layer, add to feature group
-        map.on(L.Draw.Event.CREATED, function(event) {
-            var layer = event.layer;
-            var content = getPopupContent(layer);
-            if (content !== null) {
-                layer.bindPopup(content);
-            }
-            drawnItems.addLayer(layer);
-        });
-		
-		// Object(s) edited - update popups
-        map.on(L.Draw.Event.EDITED, function(event) {
-            var layers = event.layers,
-                content = null;
-            layers.eachLayer(function(layer) {
-                content = getPopupContent(layer);
-                if (content !== null) {
-                    layer.setPopupContent(content);
-				}
             });
-        });
-		
-	// Add base maps
-	var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-    }).addTo(map);
-	
-	var Esri_WorldShadedRelief = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri',
-	maxZoom: 13});
-	
-	var esri= L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
-	});
-    var osm=new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{ 
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
-	
-	var baseMaps = {
-	"ESRI world imagery":Esri_WorldImagery,
-	"OSM":osm,
-	"ESRI gray":esri,
-	"ESRI shade":Esri_WorldShadedRelief
-	};
-	
-	//add layer switch control
-	L.control.layers(baseMaps,{ 'drawlayer': drawnItems }, { position: 'topright', collapsed: true }).addTo(map);
-	
-	//add scale bar to map
-        L.control.scale({
-            position: 'bottomleft'
-        }).addTo(map);
-	
-	//add WMS layer	
-    //L.tileLayer.wms("https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi", {
-    	//layers: 'Agricultural_Lands_Croplands_2000',
-        //format: 'image/png',
-        //transparent: true,
-        //attribution: "Weather data © 2012 IEM Nexrad"
-   // }).addTo(map);
-   
-// Minimap
-		
 
-	//Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
-	var Esri2 = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        })
-	var miniMap = new L.Control.MiniMap(Esri2, { toggleDisplay: true }).addTo(map);
- 
-// Add AAM logo as watermark
-	L.Control.Watermark =L.Control.extend({
-	  onAdd:function(map){
-		var img = L.DomUtil.create('img');
-		img.src = 'images/AAM.png';
-		img.style.width='50px';
-		return img;
-	  },
-	  onRemove:function(map){},
-	 });
-	 
-	 L.control.watermark = function(opts){
-		return new L.Control.Watermark(opts);
-		}
-		
-	L.control.watermark({position:'bottomleft'}).addTo(map);
-</script>
-</body>
+            map.addControl(drawControl);
+            
+            map.on(L.Draw.Event.CREATED, function (event) {
+                var layer = event.layer;
+                drawnItems.addLayer(layer);
+            });
+            
+            // Truncate value based on number of decimals
+            var _round = function(num, len) {
+                return Math.round(num*(Math.pow(10, len)))/(Math.pow(10, len));
+            };
+            // Helper method to format LatLng object (x.xxxxxx, y.yyyyyy)
+            var strLatLng = function(latlng) {
+                return "("+_round(latlng.lat, 6)+", "+_round(latlng.lng, 6)+")";
+            };
+            
+            // Generate popup content based on layer type
+            // - Returns HTML string, or null if unknown object
+            var getPopupContent = function(layer) {
+                // Marker - add lat/long
+                if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                    return strLatLng(layer.getLatLng());
+                    // Circle - lat/long, radius
+                } else if (layer instanceof L.Circle) {
+                    var center = layer.getLatLng(),
+                    radius = layer.getRadius();
+                    return "Center: "+strLatLng(center)+"<br />"
+                            +"Radius: "+_round(radius, 2)+" m";
+                    // Rectangle/Polygon - area
+                } else if (layer instanceof L.Polygon) {
+                    var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
+                        area = L.GeometryUtil.geodesicArea(latlngs);
+                        return "Area: "+L.GeometryUtil.readableArea(area, true);
+                    // Polyline - distance
+                } else if (layer instanceof L.Polyline) {
+                        var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
+                            distance = 0;
+                        if (latlngs.length < 2) {
+                            return "Distance: N/A";
+                        } else {
+                            for (var i = 0; i < latlngs.length-1; i++) {
+                                distance += latlngs[i].distanceTo(latlngs[i+1]);
+                            }
+                            return "Distance: "+_round(distance, 2)+" m";
+                        }
+                    }
+                return null;
+            };
+                
+            // Object created - bind popup to layer, add to feature group
+            map.on(L.Draw.Event.CREATED, function(event) {
+                var layer = event.layer;
+                var content = getPopupContent(layer);
+                    if (content !== null) {
+                        layer.bindPopup(content);
+                    }
+                drawnItems.addLayer(layer);
+            });
+                
+            // Object(s) edited - update popups
+            map.on(L.Draw.Event.EDITED, function(event) {
+                var layers = event.layers,
+                content = null;
+                layers.eachLayer(function(layer) {
+                    content = getPopupContent(layer);
+                        if (content !== null) {
+                            layer.setPopupContent(content);
+                        }
+                });
+            });
+                
+            // Add base maps
+            var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }).addTo(map);
+            
+            var Esri_WorldShadedRelief = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri',
+                maxZoom: 13
+            });
+            
+            var esri= L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+            });
+
+            var osm=new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{ 
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            });
+
+            var Dark=new L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}.png',{ 
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            });
+
+            var baseMaps = {
+                "ESRI world imagery":Esri_WorldImagery,
+                "OSM":osm,
+                "ESRI gray":esri,
+                "ESRI shade":Esri_WorldShadedRelief,
+                "Dark map": Dark
+            };
+            
+            //add layer switch control
+            L.control.layers(baseMaps,{'drawlayer': drawnItems }, { position: 'topright', collapsed: true }).addTo(map);
+            
+            //add scale bar to map
+            L.control.scale({
+                position: 'bottomleft'
+            }).addTo(map);
+            
+            // Minimap
+            //Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+            var Esri2 = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            })
+
+            var miniMap = new L.Control.MiniMap(Esri2, { toggleDisplay: true }).addTo(map);
+        
+            // Add AAM logo as watermark
+            L.Control.Watermark =L.Control.extend({
+                onAdd:function(map){
+                    var img = L.DomUtil.create('img');
+                    img.src = 'images/AAM.png';
+                    img.style.width='50px';
+                    return img;
+                },
+                onRemove:function(map){},
+            });
+            
+            L.control.watermark = function(opts){
+                return new L.Control.Watermark(opts);
+            }
+                
+            L.control.watermark({position:'bottomleft'}).addTo(map);
+        </script>
+    </body>
 </html>
