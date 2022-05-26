@@ -84,7 +84,7 @@
                             layer.bindPopup('<h2>SHI: '+feature.properties.SHI.toFixed(1));
                         }
                     });
-                    control.addOverlay(shi,"SHI_points");
+                    control.addOverlay(shi,"DE SHI points");
                 });
 
             var control = L.control.layers(baseMaps); // Grab the handle of the Layer Control, it will be easier to find.
@@ -115,7 +115,7 @@
                             });
                         },
                         onEachFeature: function (feature, layer) {
-                            layer.bindPopup('<h2>SHI: '+feature.properties.SHI);
+                            layer.bindPopup('<h2>SHI : '+feature.properties.SHI);
                         }
                     });
                     control.addOverlay(shi_eu,"EU SHI points");
@@ -146,10 +146,10 @@
                             };
                         },
                         onEachFeature: function (feature, layer) {
-                            layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+                            layer.bindPopup('<h2>Class: '+feature.properties.DN);
                         }
                     });
-                    control.addOverlay(temp,"Temp_bins");
+                    control.addOverlay(temp,"Temperature Classes");
                 });
 
             //Fetch Geojson adding prcp bins
@@ -168,10 +168,10 @@
                                 };
                             },
                             onEachFeature: function (feature, layer) {
-                                layer.bindPopup('<h2>Bin: '+feature.properties.DN);
+                                layer.bindPopup('<h2>Class: '+feature.properties.DN);
                             }
                         });
-                        control.addOverlay(prcp,"Prcp_bins");
+                        control.addOverlay(prcp,"Precipitation classes");
                 });
             
             // Add Texture bins
@@ -195,7 +195,7 @@
                             values[0] === 3 ? '#dc0f0f' :
                             '#ffffff00'
                         });
-                        control.addOverlay(texture_bins,"Texture_bins");
+                        control.addOverlay(texture_bins,"Texture Classes");
                         map.fitBounds(texture_bins.getBounds());
                         texture_bins.on('click', function (e) {
 				            const latlng = [e.latlng.lng, e.latlng.lat];
@@ -263,7 +263,7 @@
                             values[0] === 334 ? '#eb58a2' :
                             '#ffffff00'
                         });
-                        control.addOverlay(final_bins,"SHI_bins");
+                        control.addOverlay(final_bins,"EU Bin");
                         //map.fitBounds(layer.getBounds());
                         final_bins.on('click', function (e) {
 				            const latlng = [e.latlng.lng, e.latlng.lat];
@@ -318,7 +318,7 @@
 				            const latlng = [e.latlng.lng, e.latlng.lat];
 				            const results = geoblaze.identify(georaster, latlng);           
 					            if (results > 0) {
-                                    let html = (`<span class="popupText">Soi health index: ${results} </span>`);
+                                    let html = (`<span class="popupText">SHI: ${results} </span>`);
                                     let popup = L.popup()
                                                 .setLatLng(e.latlng)
                                                 .setContent(html)
