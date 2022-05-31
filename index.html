@@ -123,10 +123,10 @@
 
             // Color function
             function getColor(d) {
-                return d == 1   ? 'blue' :
-                    d == 2   ? 'yellow' :
-                    d == 3   ? 'red' :
-                    d == 4   ? 'green' :
+                return d == 1   ? '#1321de' :
+                    d == 2   ? '#f0f022' :
+                    d == 3   ? '#ff7f00' :
+                    d == 4   ? '#dc0f0f' :
                                 '#00000';
             }
 
@@ -151,7 +151,13 @@
                     });
                     control.addOverlay(temp,"Temperature Classes");
                 });
-
+	    // Color function
+            function setColor(d) {
+                return d == 1   ? '#f4a460' :
+                       d == 2   ? '#3ffff9' :
+                       d == 3   ? '#008b8b' :
+                                '#00000';
+            }
             //Fetch Geojson adding prcp bins
             fetch("data/prcp.geojson")
                 .then(function(response) {
@@ -161,7 +167,7 @@
                         var prcp= L.geoJSON(data, {
                             style: function(feature) {
                                 return {
-                                    fillColor: getColor(feature.properties.DN),
+                                    fillColor: setColor(feature.properties.DN),
                                     color:'#ffffff00',
                                     opacity:1,
                                     fillOpacity:0.8
