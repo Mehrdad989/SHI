@@ -324,7 +324,7 @@
 				            const latlng = [e.latlng.lng, e.latlng.lat];
 				            const results = geoblaze.identify(georaster, latlng);           
 					            if (results > 0) {
-                                    let html = (`<span class="popupText">SHI: ${results} </span>`);
+                                    let html = (`<h2 class="popupText">SHI: ${results} </h2>`);
                                     let popup = L.popup()
                                                 .setLatLng(e.latlng)
                                                 .setContent(html)
