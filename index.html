@@ -322,9 +322,11 @@
                             control.addOverlay(layer,"Soil Health Index");
                             map.on('click', function (e) {
 				            const latlng = [e.latlng.lng, e.latlng.lat];
-				            const results = geoblaze.identify(georaster, latlng);           
+				            const results = geoblaze.identify(georaster, latlng);
+				    	    resultNew = Number(results);
+				    	    const newResults = resultNew.toFixed(2);
 					            if (results > 0) {
-                                    let html = (`<h2 class="popupText">SHI: ${results} </h2>`);
+                                    let html = (`<h2 class="popupText">SHI: ${newResults} </h2>`);
                                     let popup = L.popup()
                                                 .setLatLng(e.latlng)
                                                 .setContent(html)
