@@ -6,6 +6,9 @@
         <title>SHI</title>
         
         <meta charset="utf-8" />
+	    
+	<!-- Load font awsome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
 
         <!-- Load Leaflet: http://leafletjs.com/ -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
@@ -29,7 +32,10 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
         
-            
+        <!-- Opacity control-->
+         <script src="plugin/Leaflet.Control.Opacity/dist/L.Control.Opacity.js"></script>
+         <link href="plugin/Leaflet.Control.Opacity/dist/L.Control.Opacity.css" rel="stylesheet" />
+         <link href="css/style.css" rel="stylesheet" /> 
         
         <style>
             /* <!-- ~ Maximizes the size of the map on the page ~ --> */
@@ -48,11 +54,26 @@
         <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
         <script src="https://unpkg.com/geoblaze"></script>
         <script src="https://unpkg.com/chroma-js"></script>
+	    
+	<!-- Slide Menu -->
+        <link rel="stylesheet" href="css/L.Control.SlideMenu.css">
+        <script src="js/L.Control.SlideMenu.js"></script>
+	    
+	<!-- canvas scalar -->
+        <!-- CDN references -->
+    
+        <script src="//d3js.org/d3.v4.min.js"></script>
+        <script src="//npmcdn.com/geotiff@0.3.6/dist/geotiff.js"></script>
+        <script src=" https://unpkg.com/leaflet-canvaslayer-field/dist/leaflet.canvaslayer.field.js"></script>
 
         <script>
+		
 	    // Add map object
             var map = L.map('map').setView([48.712854, 9.208281], 4);
             
+	    // Add Slide menu
+            //L.control.slideMenu('<p>test</p>').addTo(map);
+		
             // Geolocate user
             L.control.locate().addTo(map);
 		
@@ -309,6 +330,7 @@
                        d == 3   ? '#008b8b' :
                                 '#00000';
             }
+		
             //Fetch Geojson adding prcp bins
             fetch("data/prcp.geojson")
                 .then(function(response) {
